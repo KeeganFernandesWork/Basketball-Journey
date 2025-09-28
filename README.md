@@ -1,6 +1,6 @@
 # Basketball Journey - AI Pose Estimation
 
-![Pose Estimation GIF](https://via.placeholder.com/600x400.gif?text=Your+Project+GIF+Here)
+![Pose Estimation GIF](static/example_output.gif)
 
 This project uses the YOLOv8 pose estimation model to detect and track human body keypoints in real-time from a webcam, a video file, or a static image. It's designed to be a foundational tool for analyzing movement, such as a basketball player's shooting form.
 
