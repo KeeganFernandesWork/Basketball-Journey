@@ -50,8 +50,8 @@ def process_video(video_path):
         if not success:
             break
 
-        # 1. Find the pose in the current frame
-        results = find_pose(frame)
+        # 1. Find the pose in the current frame, with tracking enabled
+        results = find_pose(frame, track=True)
 
         # The results object is a generator, so we loop through it
         for r in results:

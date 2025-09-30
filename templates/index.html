@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client-Side Camera Pose Estimation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #f0f0f0; }
+        .container { display: flex; gap: 20px; margin-top: 20px; }
+        .video-box { display: flex; flex-direction: column; align-items: center; }
+        video, img { border: 2px solid #333; border-radius: 8px; background-color: #000; }
+        h1, h2 { color: #333; }
+        #status { margin-top: 10px; font-style: italic; color: #555; }
+    </style>
+</head>
+<body>
+    <h1>Client-Side Pose Estimation</h1>
+    <div id="status">Connecting to server...</div>
+    <div class="container">
+        <div class="video-box">
+            <h2>Your Camera</h2>
+            <video id="video" width="640" height="480" autoplay playsinline></video>
+        </div>
+        <div class="video-box">
+            <h2>Processed Stream</h2>
+            <img id="processed_image" width="640" height="480">
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const video = document.getElementById('video');
+            const processedImage = document.getElementById('processed_image');
+            const status = document.getElementById('status');
+            
+            // Connect to the Socket.IO server
+            const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+            socket.on('connect', function() {
+                status.innerHTML = 'Connected to server. Starting camera...';
+                console.log('Socket connected!');
+                startCamera();
+            });
+
+            socket.on('disconnect', function() {
+                status.innerHTML = 'Disconnected from server.';
+                console.log('Socket disconnected.');
+            });
+
+            socket.on('processed_image', function(data) {
+                // Update the src of the img tag with the new image data
+                processedImage.src = data.image;
+            });
+
+            function startCamera() {
+                if (navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(function (stream) {
+                            video.srcObject = stream;
+                            status.innerHTML = 'Camera started. Sending frames for processing...';
+                            // Send frames to the server every 100ms (10 FPS)
+                            setInterval(() => {
+                                sendFrame();
+                            }, 100);
+                        })
+                        .catch(function (error) {
+                            console.error("Something went wrong!", error);
+                            status.innerHTML = 'Error accessing camera: ' + error;
+                        });
+                }
+            }
+
+            function sendFrame() {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Convert the canvas to a data URL and send it to the server
+                const dataURL = canvas.toDataURL('image/jpeg');
+                socket.emit('image', dataURL);
+            }
+        });
+    </script>
+</body>
+</html>
