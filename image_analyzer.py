@@ -5,6 +5,15 @@ import tkinter as tk
 from tkinter import filedialog
 from pose_detector import find_pose, label_keypoints
 
+
+KEYPOINT_NAMES = [
+    "Nose", "Left Eye", "Right Eye", "Left Ear", "Right Ear",
+    "Left Shoulder", "Right Shoulder", "Left Elbow", "Right Elbow",
+    "Left Wrist", "Right Wrist", "Left Hip", "Right Hip",
+    "Left Knee", "Right Knee", "Left Ankle", "Right Ankle"
+]
+
+
 def select_image_file():
     """Opens a file dialog for the user to select an image file."""
     root = tk.Tk()
