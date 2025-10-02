@@ -13,7 +13,7 @@ KEYPOINT_NAMES = [
     "Left Knee", "Right Knee", "Left Ankle", "Right Ankle"
 ]
 
-
+points = [8, 6,12]
 def select_image_file():
     """Opens a file dialog for the user to select an image file."""
     root = tk.Tk()
